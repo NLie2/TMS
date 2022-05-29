@@ -25,6 +25,25 @@ namespace TMS
 
             label1.Text = ReadReplies(); //display replies with streamreader
 
+            //make example array 
+            int[,] exampledata = new int[5, 4]{ { 1, 2, 3, 4 }, { 1, 1, 1, 1 }, { 2, 2, 2, 2 }, { 3, 3, 3, 3 }, { 4, 4, 4, 4 } };
+
+            int rowLength = exampledata.GetLength(0);
+            int colLength = exampledata.GetLength(1);
+
+            string label2text = ""; 
+
+            for (int i = 0; i < rowLength; i++)
+            {
+                for (int j = 0; j < colLength; j++)
+                {
+                    label2text += exampledata[i, j];
+                }
+                label2text += "\n";
+            }
+
+            label2.Text = label2text; 
+
         }
 
         //load replies with streamreader STILL NEEDS TO BE MADE CORRECT/turn into a table
@@ -70,6 +89,7 @@ namespace TMS
             }*/
 
             var reader = new StreamReader(filename);
+
 
             string line;
             char[] separators = {','};
