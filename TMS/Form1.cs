@@ -69,8 +69,6 @@ namespace TMS
                 result += a; 
             }*/
 
-            //comments
-
             var reader = new StreamReader(filename);
 
             string line;
