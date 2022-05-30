@@ -26,28 +26,56 @@ namespace TMS
 
             List<int> list = new List<int> { 1, 2, 3, 4 };
 
-            List<List<int>> exampledata = new List<List<int>>{ new List<int>{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, 
+            List<List<int>> exampledata1 = new List<List<int>>{ new List<int>{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, 
                                                                new List<int>{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
                                                                new List<int>{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
                                                                new List<int>{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
                                                                new List<int>{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } 
                                                               };
 
+            List<List<int>> exampledata2 = new List<List<int>>{new List<int>{ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 },
+                                                               new List<int>{ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 },
+                                                               new List<int>{ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 },
+                                                               new List<int>{ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 },
+                                                               new List<int>{ 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 }
+                                                              };
+
+            List<List<int>> exampledata3 = new List<List<int>>{new List<int>{ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
+                                                               new List<int>{ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
+                                                               new List<int>{ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
+                                                               new List<int>{ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 },
+                                                               new List<int>{ 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4 }
+                                                              };
+
+            List<List<int>> exampledata4 = new List<List<int>>{new List<int>{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 },
+                                                               new List<int>{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 },
+                                                               new List<int>{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 },
+                                                               new List<int>{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 },
+                                                               new List<int>{ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 }
+                                                              };
 
 
 
             InitializeComponent();
 
-            label2.Text = Exampledata(exampledata); 
+            label2.Text = Exampledata(exampledata4); 
 
 
-            TMS t = new TMS(exampledata, 5);
-            int tmsScore = t.TMSscoreForTeamtotal();
-            label3.Text = tmsScore.ToString();  
+            TMS t = new TMS(exampledata4, 5);
 
-            label4.Text = t.TMSscoreForTeamPercategory(teammembers, 1, 15).ToString(); //YOU LEFT HERE 
+            double tmsScore = t.TMSscoreForTeamtotal();
+
+            label3.Text = tmsScore.ToString();
+
+            label4.Text = " cr: " + t.credibility.ToString() 
+                           + " s: " + t.credibility.ToString() 
+                           + " co: " + t.coordination.ToString() 
+                           + " totalag: " + t.calculateAggregateScoreForscale().ToString()
+                           + " total: " + t.TMSscoreForTeamtotal().ToString(); 
+
             //label4.Text = t.credibility.ToString();
             //label4.Text = t.calculateAggregateScorePeritem(teammembers, 1, 15).ToString(); 
+            //label4.Text = t.normalizedScore(5, 1, 5).ToString(); 
 
         }
 
@@ -125,14 +153,12 @@ namespace TMS
 
         public class TMS
         {
-            //2dimensional list instead of array 
             //skip unnecessary data 
 
             public List<List<int>> TeamReplies; 
-            //public int[,] TeamReplies;
-            public int credibility;
-            public int specialization;
-            public int coordination;
+            public double credibility;
+            public double specialization;
+            public double coordination;
             int members;
 
             public TMS(List<List<int>> replies, int howManyTeamMembers)  // int[howManyTeamMembers, 15]
@@ -143,7 +169,7 @@ namespace TMS
 
                 credibility = TMSscoreForTeamPercategory(members, 0, 4);
                 specialization = TMSscoreForTeamPercategory(members, 5, 9);
-                coordination = TMSscoreForTeamPercategory(members, 11, 14);
+                coordination = TMSscoreForTeamPercategory(members, 10, 14);
 
             }
 
@@ -159,18 +185,16 @@ namespace TMS
                     }
             
                 }
-
-                result += TeamMembers; 
                 return result;
             }
 
-            private int calculateAggregateScoreForscale(int specialization, int credibility, int coordination) //sums score of 3 categories
+            public double calculateAggregateScoreForscale() //sums score of 3 categories
             {
-                int aggregateScore = credibility + specialization + coordination;
+                double aggregateScore = this.credibility + this.specialization + this.coordination;
                 return aggregateScore;
             }
 
-            private int normalizedScore(int maxScore, int minScore, int aggregateScore)
+            public int normalizedScore(int maxScore, int minScore, int aggregateScore)
             {
                 int range = maxScore - minScore;
                 int X = aggregateScore - minScore;
@@ -178,22 +202,22 @@ namespace TMS
                 return normalized;
             }
  
-            public int TMSscoreForTeamPercategory(int teamsize, int from, int to) //gives normalized aggregate score 
+            public double TMSscoreForTeamPercategory(int teamsize, int from, int to) //gives normalized aggregate score 
             {
                 int minscore = teamsize * 1;
                 int maxscore = teamsize * 5;
 
-                int result = normalizedScore(minscore, maxscore, calculateAggregateScorePeritem(teamsize, from, to));
+                double result = normalizedScore(maxscore, minscore, calculateAggregateScorePeritem(teamsize, from, to));
 
                 return result;
             }
 
-            public int TMSscoreForTeamtotal()
+            public double TMSscoreForTeamtotal()
             {
-                int minscore = members * 1 * 3;
-                int maxscore = members * 5 * 3;
+                int min = 3; 
+                int max = 15;
 
-                int result = normalizedScore(minscore, maxscore, calculateAggregateScoreForscale(specialization, credibility, coordination));
+                double result = calculateAggregateScoreForscale() / (max-min) ;
 
                 return result; 
             }
