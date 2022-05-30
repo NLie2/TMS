@@ -21,73 +21,68 @@ namespace TMS
 
         public Form1()
         {
+            // make example array
+            const int teammembers = 5;
+
+            List<int> list = new List<int> { 1, 2, 3, 4 };
+
+            List<List<int>> exampledata = new List<List<int>>{ new List<int>{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, 
+                                                               new List<int>{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                                                               new List<int>{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                                                               new List<int>{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+                                                               new List<int>{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 } 
+                                                              };
+
+
+
+
             InitializeComponent();
 
-            label1.Text = ReadReplies(); //display replies with streamreader
+            label2.Text = Exampledata(exampledata); 
 
-            //make example array 
-            int[,] exampledata = new int[5, 4]{ { 1, 2, 3, 4 }, { 1, 1, 1, 1 }, { 2, 2, 2, 2 }, { 3, 3, 3, 3 }, { 4, 4, 4, 4 } };
 
-            int rowLength = exampledata.GetLength(0);
-            int colLength = exampledata.GetLength(1);
+            TMS t = new TMS(exampledata, 5);
+            int tmsScore = t.TMSscoreForTeamtotal();
+            label3.Text = tmsScore.ToString();  
 
-            string label2text = ""; 
-
-            for (int i = 0; i < rowLength; i++)
-            {
-                for (int j = 0; j < colLength; j++)
-                {
-                    label2text += exampledata[i, j];
-                }
-                label2text += "\n";
-            }
-
-            label2.Text = label2text; 
+            label4.Text = t.TMSscoreForTeamPercategory(teammembers, 1, 15).ToString(); //YOU LEFT HERE 
+            //label4.Text = t.credibility.ToString();
+            //label4.Text = t.calculateAggregateScorePeritem(teammembers, 1, 15).ToString(); 
 
         }
 
+
+
+
+        private string Exampledata(List<List<int>> table)
+        {
+
+            //int rowLength = exampledata.GetLength(0);
+            //int colLength = exampledata.GetLength(1);
+
+            string result = "";
+
+            foreach(List<int>  row in table)
+            {
+                foreach(int cell in row)
+                {
+                    result += cell.ToString(); 
+                }
+                result += "\n";
+            }
+
+
+            return result; 
+        }
+
         //load replies with streamreader STILL NEEDS TO BE MADE CORRECT/turn into a table
-        private string ReadReplies()
+        private List<List<string>> ReadReplies()
         {
             string result = ""; 
            
             string filename = "responses.csv";
 
-            //List<dynamic> records = new List<dynamic>(); 
-
-            /*using (var reader = new StreamReader(filename))
-            {
-                using (var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture))
-                {
-                    var records = csvReader.GetRecords<dynamic>().ToList(); 
-                }
-            }*/
-
-            /*List<string> listA = new List<string>();
-            List<string> listB = new List<string>();
-
-            using (var reader = new StreamReader(filename))
-            {
-                int nr = 0; 
-                while (!reader.EndOfStream)
-                {
-                    var line = reader.ReadLine();
-                    var values = line.Split(',');
-
-                    listA.Add(values[nr]);
-                    listB.Add(values[nr]);
-
-                    nr++; 
-                }
-
-
-            }
-
-            foreach (string a in listA)
-            {
-                result += a; 
-            }*/
-
+            
             var reader = new StreamReader(filename);
 
 
@@ -96,16 +91,31 @@ namespace TMS
 
             result = reader.ReadToEnd();
 
-            for (int i = 0; i< result.Length; i++)
+
+
+
+            List<List<string>> table = new List<List<string>>();
+
+            string[] rows = result.Split('\n');
+            foreach( string row in rows) 
             {
-                string[] words = result.Split(separators);
+                string[] cells = row.Split(',');
+                List<string> _row = new List<string>();
+                foreach (string cell in cells)
+                {
+                    _row.Add(cell);
+                }
+                table.Add(_row);
             }
+
+            //string[,] words = new string[rows.Length, DataGridCell.]
+
 
             //separate according to structure of csv file (then you can use what is written in the label or the csv file for calculation of the score as well . 
             //loop through the lines 
 
 
-            return result; 
+            return table; 
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -115,40 +125,46 @@ namespace TMS
 
         public class TMS
         {
-            public int[,] TeamReplies;
+            //2dimensional list instead of array 
+            //skip unnecessary data 
+
+            public List<List<int>> TeamReplies; 
+            //public int[,] TeamReplies;
             public int credibility;
             public int specialization;
             public int coordination;
-
             int members;
 
-            public TMS(int[,] replies, int howManyTeamMembers)  // int[howManyTeamMembers, 15]
+            public TMS(List<List<int>> replies, int howManyTeamMembers)  // int[howManyTeamMembers, 15]
             {
                 TeamReplies = replies;
 
                 members = howManyTeamMembers;
-                credibility = calculateAggregateScorePeritem(members, 1, 5);
-                specialization = calculateAggregateScorePeritem(members, 6, 10);
-                coordination = calculateAggregateScorePeritem(members, 11, 15);
+
+                credibility = TMSscoreForTeamPercategory(members, 0, 4);
+                specialization = TMSscoreForTeamPercategory(members, 5, 9);
+                coordination = TMSscoreForTeamPercategory(members, 11, 14);
 
             }
 
-            private int calculateAggregateScorePeritem(int TeamMembers, int from, int to)
+            public int calculateAggregateScorePeritem(int TeamMembers, int from, int to)
             {
                 int result = 0;
 
                 for (int i = 0; i < TeamMembers; i++)
                 {
-                    for (int k = from; k < to; k++)//e.g.: from question 5-10
+                    for (int k = from; k < to; k++) //e.g.: from question 5-10
                     {
-                        result += TeamReplies[i, k];
+                        result += TeamReplies[i][k];
                     }
+            
                 }
 
+                result += TeamMembers; 
                 return result;
             }
 
-            private int calculateAggregateScoreForscale(int specialization, int credibility, int coordination)
+            private int calculateAggregateScoreForscale(int specialization, int credibility, int coordination) //sums score of 3 categories
             {
                 int aggregateScore = credibility + specialization + coordination;
                 return aggregateScore;
@@ -162,7 +178,7 @@ namespace TMS
                 return normalized;
             }
  
-            private int TMSscoreForTeamPercategory(int teamsize, int from, int to) //E.g.: from= 5, to= 10
+            public int TMSscoreForTeamPercategory(int teamsize, int from, int to) //gives normalized aggregate score 
             {
                 int minscore = teamsize * 1;
                 int maxscore = teamsize * 5;
@@ -172,7 +188,7 @@ namespace TMS
                 return result;
             }
 
-            private int TMSscoreForTeamtotal(int specialization, int credibility, int coordination)
+            public int TMSscoreForTeamtotal()
             {
                 int minscore = members * 1 * 3;
                 int maxscore = members * 5 * 3;
