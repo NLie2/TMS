@@ -54,32 +54,28 @@ namespace TMS
                                                               };
 
 
-
+            //Print results in Form1
             InitializeComponent();
 
-            label1.Text = ListToArrayStr(ReadRepliesFromFile()); 
+            label1.Text = "INPUT FROM CSV " + "\n" + "\n" + ListToArrayStr(ReadRepliesFromFile()); 
 
-            label2.Text = ListToArrayInt(exampledata4); 
+            label2.Text = "EXAMPLEDATA" + "\n" + "\n" + ListToArrayInt(exampledata4); 
 
 
             TMS t = new TMS(convertStringMatrixToIntMatrix(repliesasmatrixstring), 3);
 
             double tmsScore = t.TMSscoreForTeamtotal();
 
-            label3.Text = tmsScore.ToString();
-
-            label4.Text = " cr: " + t.credibility.ToString() 
-                           + " s: " + t.credibility.ToString() 
-                           + " co: " + t.coordination.ToString() 
-                           + " totalag: " + t.calculateAggregateScoreForscale().ToString()
-                           + " total: " + t.TMSscoreForTeamtotal().ToString(); 
+  
+            label4.Text = " Credibility: " + t.credibility.ToString() 
+                           + " Specialization: " + t.credibility.ToString() 
+                           + " Coordination: " + t.coordination.ToString() 
+                           + " TotalAggregateScore: " + t.calculateAggregateScoreForscale().ToString()
+                           + " TotalScore: " + t.TMSscoreForTeamtotal().ToString(); 
 
             //label4.Text = t.credibility.ToString();
             //label4.Text = t.calculateAggregateScorePeritem(teammembers, 1, 15).ToString(); 
             //label4.Text = t.normalizedScore(5, 1, 5).ToString(); 
-
-
-
 
         }
 
@@ -105,8 +101,6 @@ namespace TMS
 
         private string ListToArrayStr(List<List<string>> table)
         {
-            //string result = "";
-
             foreach (List<string> row in table.Skip(1)) //With skip and take, the irrelevant parts of the csv files are skipped. 
             {
                 foreach (string cell in row.Skip(1).Take(15))
@@ -174,10 +168,6 @@ namespace TMS
             return table; 
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
 
         public class TMS
         {
@@ -187,7 +177,7 @@ namespace TMS
             public double coordination;
             int members;
 
-            public TMS(List<List<int>> replies, int howManyTeamMembers)  // int[howManyTeamMembers, 15]
+            public TMS(List<List<int>> replies, int howManyTeamMembers)  //Constructor takes a 2DList with the replies as input, as well as how many members
             {
                 TeamReplies = replies;
 
