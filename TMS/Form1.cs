@@ -17,12 +17,12 @@ namespace TMS
 {
     public partial class Form1 : Form
     {
+        string repliesasmatrixstring; 
 
         public Form1()
         {
-            // make example array
-            const int teammembers = 5;
-
+            repliesasmatrixstring = ""; 
+            //Exampledata: 
             List<int> list = new List<int> { 1, 2, 3, 4 };
 
             List<List<int>> exampledata1 = new List<List<int>>{ new List<int>{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, 
@@ -57,12 +57,12 @@ namespace TMS
 
             InitializeComponent();
 
-            label1.Text = ListToArrayStr(ReadReplies()); 
+            label1.Text = ListToArrayStr(ReadRepliesFromFile()); 
 
             label2.Text = ListToArrayInt(exampledata4); 
 
 
-            TMS t = new TMS(exampledata4, 5);
+            TMS t = new TMS(convertStringMatrixToIntMatrix(repliesasmatrixstring), 3);
 
             double tmsScore = t.TMSscoreForTeamtotal();
 
@@ -77,6 +77,9 @@ namespace TMS
             //label4.Text = t.credibility.ToString();
             //label4.Text = t.calculateAggregateScorePeritem(teammembers, 1, 15).ToString(); 
             //label4.Text = t.normalizedScore(5, 1, 5).ToString(); 
+
+
+
 
         }
 
@@ -102,33 +105,51 @@ namespace TMS
 
         private string ListToArrayStr(List<List<string>> table)
         {
-            string result = "";
+            //string result = "";
 
-            foreach (List<string> row in table.Skip(1))
+            foreach (List<string> row in table.Skip(1)) //With skip and take, the irrelevant parts of the csv files are skipped. 
             {
                 foreach (string cell in row.Skip(1).Take(15))
                 {
-                    result += cell;
+                    repliesasmatrixstring += cell + " ";
                 }
-                result += "\n";
+                repliesasmatrixstring += "\n";
             }
 
-
-            return result;
+            return repliesasmatrixstring;
         }
 
-        //load replies with streamreader STILL NEEDS TO BE MADE CORRECT/turn into a table
-        private List<List<string>> ReadReplies()
+
+        private List<List<int>> convertStringMatrixToIntMatrix(string stringinmatrixformat)
+        {
+            List<List<int>> result = new List<List<int>>();
+
+            string[] rows = stringinmatrixformat.Split('\n');
+            char[] charSeparators = new char[] { ' ' };
+            foreach (string row in rows)
+            {
+                string[] cells = row.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
+                List<int> _row = new List<int>();
+
+                foreach (string cell in cells)
+                {
+                    _row.Add(int.Parse(cell)); // convert string intput to integer !!!
+                }
+                result.Add(_row);
+            }
+
+            return result; 
+
+        }
+
+        private List<List<string>> ReadRepliesFromFile()
         {
             string result = ""; 
            
-            string filename = "responses.csv";
-
+            string filename = "responses.2.csv";
             
             var reader = new StreamReader(filename);
 
-
-            string line;
             char[] separators = {','};
 
             result = reader.ReadToEnd();
@@ -150,13 +171,6 @@ namespace TMS
                 table.Add(_row);
             }
 
-            //string[,] words = new string[rows.Length, DataGridCell.]
-
-
-            //separate according to structure of csv file (then you can use what is written in the label or the csv file for calculation of the score as well . 
-            //loop through the lines 
-
-
             return table; 
         }
 
@@ -167,8 +181,6 @@ namespace TMS
 
         public class TMS
         {
-            //skip unnecessary data 
-
             public List<List<int>> TeamReplies; 
             public double credibility;
             public double specialization;
