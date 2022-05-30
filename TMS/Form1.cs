@@ -12,7 +12,6 @@ using CsvHelper;
 using System.Globalization;
 
 //ToDo: Read CSV file as a list and transform into a 2dimensional array 
-//ToDo: Check if all the membervariables are correct in TMS class. (maybe need to be transformed to properties)
 
 namespace TMS
 {
@@ -58,7 +57,9 @@ namespace TMS
 
             InitializeComponent();
 
-            label2.Text = Exampledata(exampledata4); 
+            label1.Text = ListToArrayStr(ReadReplies()); 
+
+            label2.Text = ListToArrayInt(exampledata4); 
 
 
             TMS t = new TMS(exampledata4, 5);
@@ -82,12 +83,8 @@ namespace TMS
 
 
 
-        private string Exampledata(List<List<int>> table)
+        private string ListToArrayInt(List<List<int>> table)
         {
-
-            //int rowLength = exampledata.GetLength(0);
-            //int colLength = exampledata.GetLength(1);
-
             string result = "";
 
             foreach(List<int>  row in table)
@@ -101,6 +98,23 @@ namespace TMS
 
 
             return result; 
+        }
+
+        private string ListToArrayStr(List<List<string>> table)
+        {
+            string result = "";
+
+            foreach (List<string> row in table.Skip(1))
+            {
+                foreach (string cell in row.Skip(1).Take(15))
+                {
+                    result += cell;
+                }
+                result += "\n";
+            }
+
+
+            return result;
         }
 
         //load replies with streamreader STILL NEEDS TO BE MADE CORRECT/turn into a table
