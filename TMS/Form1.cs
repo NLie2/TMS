@@ -11,8 +11,6 @@ using System.IO;
 using CsvHelper;
 using System.Globalization;
 
-//ToDo: Read CSV file as a list and transform into a 2dimensional array 
-
 namespace TMS
 {
     public partial class Form1 : Form
