@@ -82,16 +82,12 @@ namespace TMS
 
                             + " TotalNormalizedScore: " + t.TMSscoreForTeamtotal().ToString(); 
 
-            //label4.Text = t.credibility.ToString();
-            //label4.Text = t.calculateAggregateScorePeritem(teammembers, 1, 15).ToString(); 
-            //label4.Text = t.normalizedScore(5, 1, 5).ToString(); 
-
         }
 
 
 
 
-        private string ListToArrayInt(List<List<int>> table)
+        private string ListToArrayInt(List<List<int>> table) //turns 2D list of integers into printable matrix- string 
         {
             string result = "";
 
@@ -108,7 +104,7 @@ namespace TMS
             return result; 
         }
 
-        private string ListToArrayStr(List<List<string>> table)
+        private string ListToArrayStr(List<List<string>> table) //turns 2D list of strings into printable matrix- string
         {
             foreach (List<string> row in table.Skip(1)) //With skip and take, the irrelevant parts of the csv files are skipped. 
             {
@@ -123,7 +119,7 @@ namespace TMS
         }
 
 
-        private List<List<int>> convertStringMatrixToIntMatrix(string stringinmatrixformat)
+        private List<List<int>> convertStringMatrixToIntMatrix(string stringinmatrixformat) //transforms 2Dlist of strings into a 2D list of integers
         {
             List<List<int>> result = new List<List<int>>();
 
@@ -145,7 +141,7 @@ namespace TMS
 
         }
 
-        private List<List<string>> ReadRepliesFromFile()
+        private List<List<string>> ReadRepliesFromFile() //Readsreplies fro csv file and outputs a 2D list (this 2D list contains all content of csv file, including quesiton titles
         {
             string result = ""; 
            
@@ -177,7 +173,7 @@ namespace TMS
             return table; 
         }
 
-
+        //TMS object ==> can calculate scores from a list of integers (replies to questions)
         public class TMS
         {
             public List<List<int>> TeamReplies; 
@@ -232,7 +228,7 @@ namespace TMS
             }
             
 
-            public double normalizedScore(int maxScore, int minScore, double aggregateScore)
+            public double normalizedScore(int maxScore, int minScore, double aggregateScore) //Calculates a normalized score
             {
                 int range = maxScore - minScore;
                 double X = aggregateScore - minScore;
@@ -254,7 +250,7 @@ namespace TMS
             }
 
 
-            public double TMSscoreForTeamtotal()
+            public double TMSscoreForTeamtotal() //Gives normalized score for entire team for entire scale 
             {
                 int min = members * 15 * 1; 
                 int max = members * 15 * 5;
