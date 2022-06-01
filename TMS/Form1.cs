@@ -59,29 +59,28 @@ namespace TMS
 
             label1.Text = "INPUT FROM CSV " + "\n" + "\n" + ListToArrayStr(ReadRepliesFromFile()); 
 
-            label2.Text = "EXAMPLEDATA" + "\n" + "\n" + ListToArrayInt(exampledata3);
+            label2.Text = "EXAMPLEDATA" + "\n" + "\n" + ListToArrayInt(exampledata4);
 
 
-            //TMS t = new TMS(convertStringMatrixToIntMatrix(repliesasmatrixstring), 3);
+           // TMS t = new TMS(convertStringMatrixToIntMatrix(repliesasmatrixstring), 3);
             TMS t = new TMS(exampledata3, 5);
 
             double tmsScore = t.TMSscoreForTeamtotal();
 
   
-            label4.Text =    //" Credibility: " + t.credibility.ToString() 
-                             //+ " Specialization: " + t.credibility.ToString() 
-                             // + " Coordination: " + t.coordination.ToString() 
+            label4.Text = " CredibilityAggregate: " + t.credibilityAggregateTeam.ToString()
+                            + " SpecializationAggregate: " + t.credibilityAggregateTeam.ToString()
+                            + " CoordinationAggregate: " + t.coordinationAggregateTeam.ToString()
+                            
+                            + " TotalAggregateScore: " + t.calculateAggregateScoreForscale().ToString()
 
-                             //" CredibilityNormal: " + t.credibilityNormal.ToString() 
-                             //+ " SpecializationNormal: " + t.credibilityNormal.ToString() 
-                             //+ " CoordinationNormal: " + t.coordinationNormal.ToString() 
+                            + "\n" + "\n"
 
-                              " CredibilityAggregate: " + t.credibilityAggregateTeam.ToString()
-                            + " SpecializationAggregate: " + t.credibilityAggregateTeam.ToString() 
-                            + " CoordinationAggregate: " + t.coordinationAggregateTeam.ToString() 
+                            + " CredibilityNormal: " + t.credibilityNormal.ToString() 
+                            + " SpecializationNormal: " + t.credibilityNormal.ToString() 
+                            + " CoordinationNormal: " + t.coordinationNormal.ToString() 
 
-                           + " TotalAggregateScore: " + t.calculateAggregateScoreForscale().ToString()
-                           + " TotalScore: " + t.TMSscoreForTeamtotal().ToString(); 
+                            + " TotalNormalizedScore: " + t.TMSscoreForTeamtotal().ToString(); 
 
             //label4.Text = t.credibility.ToString();
             //label4.Text = t.calculateAggregateScorePeritem(teammembers, 1, 15).ToString(); 
@@ -182,9 +181,7 @@ namespace TMS
         public class TMS
         {
             public List<List<int>> TeamReplies; 
-            public double credibility;
-            public double specialization;
-            public double coordination;
+
             int members;
 
             public double credibilityNormal;
@@ -202,13 +199,9 @@ namespace TMS
 
                 members = howManyTeamMembers;
 
-                credibility = TMSscoreForTeamPercategory(members, 0, 5);
-                specialization = TMSscoreForTeamPercategory(members, 5, 10);
-                coordination = TMSscoreForTeamPercategory(members, 10, 115);
-
                 credibilityNormal = TMSscorenormalizedTeamItem(members, 0, 5); 
                 specializationNormal = TMSscorenormalizedTeamItem(members, 5, 10);
-                coordinationNormal = TMSscorenormalizedTeamItem(members, 5, 15);
+                coordinationNormal = TMSscorenormalizedTeamItem(members, 10, 15);
 
                 credibilityAggregateTeam = calculateAggregateScorePeritem(members, 0, 5);
                 specializationAggregateTeam = calculateAggregateScorePeritem(members, 5, 10);
@@ -216,9 +209,9 @@ namespace TMS
 
         }
 
-            public int calculateAggregateScorePeritem(int TeamMembers, int from, int to) //Calculates aggregate score for entire team for 1 item. 
+            public double calculateAggregateScorePeritem(int TeamMembers, int from, int to) //Calculates aggregate score for entire team for 1 item. 
             {
-                int result = 0;
+                double result = 0;
 
                 for (int i = 0; i < TeamMembers; i++)
                 {
@@ -233,27 +226,19 @@ namespace TMS
 
             public double calculateAggregateScoreForscale() //sums score of 3 categories
             {
-                double aggregateScore = this.credibility + this.specialization + this.coordination;
+                double aggregateScore = credibilityAggregateTeam + specializationAggregateTeam + coordinationAggregateTeam;
+
                 return aggregateScore;
             }
             
 
-            public int normalizedScore(int maxScore, int minScore, int aggregateScore)
+            public double normalizedScore(int maxScore, int minScore, double aggregateScore)
             {
                 int range = maxScore - minScore;
-                int X = aggregateScore - minScore;
-                int normalized = X / range;
+                double X = aggregateScore - minScore;
+                double normalized = X / range;
+
                 return normalized;
-            }
- 
-            public double TMSscoreForTeamPercategory(int teamsize, int from, int to) //check what this does exactly later
-            {
-                int minscore = teamsize * 1;
-                int maxscore = teamsize * 5;
-
-                double result = normalizedScore(maxscore, minscore, calculateAggregateScorePeritem(teamsize, from, to));
-
-                return result;
             }
 
             public double TMSscorenormalizedTeamItem(int teamsize, int from, int to) //gives normalized score for entire team for one item, 
@@ -261,7 +246,7 @@ namespace TMS
                 int min = teamsize * 5 * 1; 
                 int max = teamsize * 5 * 5;
 
-                int X = calculateAggregateScorePeritem(teamsize, from, to);
+                double X = calculateAggregateScorePeritem(teamsize, from, to);
 
                 double Xnormalized = (X - min) / (max - min);
                 return Xnormalized; 
@@ -271,12 +256,15 @@ namespace TMS
 
             public double TMSscoreForTeamtotal()
             {
-                int min = 3; 
-                int max = 15;
+                int min = members * 15 * 1; 
+                int max = members * 15 * 5;
 
-                double result = calculateAggregateScoreForscale() / (max-min) ;
+                double X = calculateAggregateScoreForscale(); 
 
-                return result; 
+
+                double Xnormalized = (X  - min) / (max-min) ;
+
+                return Xnormalized; 
             }
 
         }
